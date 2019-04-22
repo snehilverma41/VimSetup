@@ -15,4 +15,6 @@ vim ~/.vimrc
 :PlugInstall (sometimes may have to :PlugClean and then :PlugInstall)
 ```
 
+```
 rm ~/renameVimSetup*
+```
