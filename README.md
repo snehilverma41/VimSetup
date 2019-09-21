@@ -1,5 +1,9 @@
 # VimSetup
 ```
+./wrapper.sh
+```
+(Don't use the following)
+```
 sudo apt-get install fonts-powerline
 git clone https://github.com/snehilverma41/VimSetup.git
 mv ~/VimSetup/.vi* ~/.
