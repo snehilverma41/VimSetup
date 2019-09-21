@@ -33,5 +33,7 @@ export PS1="\[\033[38;5;11m\]\u\[$(tput sgr0)\]\[\033[38;5;15m\]@\[$(tput sgr0)\
 
 # Terminal Settings
 
+```
 Text: #C3D0D1
 Background: #002B36
+```
