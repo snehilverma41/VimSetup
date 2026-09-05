@@ -24,6 +24,7 @@ To back out:
 ```sh
 ./uninstall.sh              # remove the symlinks, restore any backups
 ./uninstall.sh --purge      # also delete plugins and undo/swap history
+./uninstall.sh --dry-run    # print what would happen, change nothing
 ```
 
 ## Verifying it works
@@ -34,9 +35,10 @@ To back out:
 ```
 
 77 checks, run against a throwaway `$HOME`, so it's safe before installing.
-It checks that the vimrc loads clean, that every mapping resolves to what it
-should, and — the part that matters — that the mappings actually *behave*
-correctly when the keys are pressed.
+It checks that the vimrc loads clean, that the mappings it covers resolve to
+what they should, and — the part that matters — that they actually *behave*
+correctly when the keys are pressed. (It asserts the 30-odd mappings most likely
+to break; the cscope maps and the abbreviations aren't covered.)
 
 That last part is the reason the file exists. Several mappings here used to look
 right and do the wrong thing at runtime: a visual-mode `"+yy` that swallowed the
@@ -46,7 +48,10 @@ you have to press the keys and count the lines.
 
 ### What install.sh does
 
-- Symlinks `.vimrc` → `~/.vimrc`, and each entry in `.vim/` → `~/.vim/`.
+- Symlinks `.vimrc` → `~/.vimrc`. If you later add a `.vim/` directory to this
+  repo, each entry in it is symlinked into `~/.vim/` too — linked per-entry
+  rather than as a whole directory, because vim-plug writes `plugged/` and
+  `autoload/plug.vim` into `~/.vim` and those must stay out of the repo.
 - Symlinks the same `.vimrc` → `~/.config/nvim/init.vim` if Neovim is installed,
   so there is only ever one config file to maintain.
 - Writes `~/.vim/local.vim` for machine-specific settings (see below).
@@ -54,7 +59,9 @@ you have to press the keys and count the lines.
 
 It is **safe to re-run**. Correct symlinks are left alone, and anything real
 already sitting at a target path is moved to `<name>.backup.<timestamp>` rather
-than overwritten. Nothing is ever deleted.
+than overwritten — no file is deleted. The one exception is `~/.vim/local.vim`:
+the generated block above its marker line is rewritten on every run, so edits to
+*those* lines are lost. Everything you add below the marker is preserved.
 
 Symlinks matter here: the installed config stays *inside* the git checkout, so
 `git pull` updates the machine and `git diff` shows local tweaks. (An earlier
@@ -110,7 +117,7 @@ and re-run `install.sh` to pick up the change.
 | `,,` | EasyMotion jump to any character |
 | `<F5>` | list buffers, then pick one |
 | `<F2>` | toggle NERDTree |
-| `<F3>` | focus NERDTree (or, in a `.tex` file, run `pdflatex`) |
+| `<F3>` | focus NERDTree — or, in a `.tex` file, run `pdflatex` (only when `pdflatex` is installed) |
 
 `<Tab>` for buffer switching costs you `<C-I>` (jump forward through the
 jumplist) — in a terminal they are the same keystroke. `<C-O>` still works.
@@ -138,6 +145,17 @@ jumplist) — in a terminal they are the same keystroke. `<C-O>` still works.
 `,y` `,d` `,p` `,P` yank / cut / paste / paste-before via the `+` register, in
 both normal and visual mode. `<C-c>` in visual mode also yanks to the clipboard.
 
+### Abbreviations
+
+These expand as you type, in insert mode:
+
+| Type | Expands to |
+| --- | --- |
+| `@@g` | snehilverma41@gmail.com |
+| `@@i` | snehilv@iitk.ac.in |
+| `@@c` | snehilv@cse.iitk.ac.in |
+| `@@u` | snehilv@utexas.edu |
+
 ### Text objects
 
 `in(` operates on the **next** bracket pair, `il(` on the **last** one; `an(`
@@ -150,9 +168,13 @@ and friends stall for a second before firing.
 
 ### cscope
 
-Active only when the `cscope` binary is present.
+Active only in Vim built with `+cscope` **and** with the `cscope` binary
+present — check with `vim --version | grep -o '[+-]cscope'`. Neovim removed
+cscope support entirely, so none of these mappings exist there.
+
 `<C-\>` then a query letter searches in the current window; `<C-@>` (Ctrl-Space)
-splits horizontally; `<C-@><C-@>` splits vertically.
+splits horizontally; `<C-@><C-@>` splits vertically. All three window modes work
+for all eight query letters.
 
 | Letter | Finds |
 | --- | --- |
@@ -247,7 +269,7 @@ macOS ships **zsh**, where those `\[...\]` escapes are not valid. Use this in
 
 ```zsh
 setopt PROMPT_SUBST
-PROMPT='%F{11}%n%f%F{15}@%f%F{10}%m%f%F{15}:%f%F{6}[%~]%f%F{15}$%f '
+PROMPT='%F{11}%n%f%F{15}@%f%F{10}%m%f%F{15}:%f%F{6}[%~]%f%F{15}%#%f '
 ```
 
 ## Terminal colors
@@ -259,6 +281,15 @@ Background: #002B36
 
 The default colorscheme is `256-jungle`, from
 [vim-colorschemes](https://github.com/flazz/vim-colorschemes). It's a 256-color
-scheme, so `termguicolors` is deliberately left off — enabling it would make a
-cterm-only scheme render with the wrong colors. If you switch to a truecolor
-scheme, turn it on in `~/.vim/local.vim`.
+scheme, so the vimrc explicitly sets `notermguicolors` — enabling truecolor
+would make a cterm-only scheme render with the wrong colors. This is set rather
+than left to the default because Neovim 0.10+ turns `termguicolors` *on* by
+itself when it detects a truecolor terminal, and this machine exports
+`COLORTERM=truecolor`.
+
+If you switch to a truecolor scheme, turn it back on in `~/.vim/local.vim`:
+
+```vim
+set termguicolors
+colorscheme <your-truecolor-scheme>
+```

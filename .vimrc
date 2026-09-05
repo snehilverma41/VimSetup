@@ -188,6 +188,16 @@ if !exists('g:colors_name')
   silent! colorscheme habamax
 endif
 
+" 256-jungle is a 256-colour (cterm) scheme, so 'termguicolors' has to stay OFF
+" or it renders with the wrong colours. Vim leaves it off by default, but
+" Neovim 0.10+ switches it ON by itself when it detects a truecolor terminal
+" (this machine exports COLORTERM=truecolor), so say so explicitly rather than
+" relying on the default. Turn it back on in ~/.vim/local.vim if you move to a
+" truecolor scheme.
+if exists('+termguicolors')
+  set notermguicolors
+endif
+
 let g:airline_theme = 'jellybeans'
 let g:airline#extensions#tabline#enabled = 1                         " Show buffers along the top
 " g:airline_powerline_fonts is NOT set here: the glyphs render as tofu boxes on
@@ -405,12 +415,15 @@ if has('cscope') && executable('cscope')
     execute 'nnoremap <C-@>' . s:q . ' :scs find ' . s:q . ' <C-R>=expand("<cword>")<CR><CR>'
     execute 'nnoremap <C-@><C-@>' . s:q . ' :vert scs find ' . s:q . ' <C-R>=expand("<cword>")<CR><CR>'
   endfor
-  " f and i act on the filename under the cursor, not the word
+  " f and i act on the filename under the cursor, not the word, so they can't
+  " go through the loop above. All three window modes, to match s/g/c/t/e/d.
   nnoremap <C-\>f :cs find f <C-R>=expand("<cfile>")<CR><CR>
   nnoremap <C-@>f :scs find f <C-R>=expand("<cfile>")<CR><CR>
+  nnoremap <C-@><C-@>f :vert scs find f <C-R>=expand("<cfile>")<CR><CR>
   " '^...$' so #include <time.h> doesn't also match sys/time.h
   nnoremap <C-\>i :cs find i ^<C-R>=expand("<cfile>")<CR>$<CR>
   nnoremap <C-@>i :scs find i ^<C-R>=expand("<cfile>")<CR>$<CR>
+  nnoremap <C-@><C-@>i :vert scs find i ^<C-R>=expand("<cfile>")<CR>$<CR>
 endif
 
 " =============================================================================
