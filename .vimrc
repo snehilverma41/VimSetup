@@ -77,6 +77,11 @@ Plug 'preservim/nerdtree', {'on': ['NERDTreeToggle', 'NERDTreeFocus']}
                                                                      " ^ both commands must be listed or <F3> is undefined
 Plug 'tpope/vim-surround'                                            " Quick surround with tags or brackets
 Plug 'easymotion/vim-easymotion'                                     " Quick jumping between lines
+" EasyMotion claims <Leader><Leader> for its own prefix menu. Vim sources a
+" plugin's plugin/*.vim AFTER the vimrc, so that default would overwrite the
+" mapping in section 5 rather than the other way round. Opt out of its default
+" mappings here and bind explicitly below.
+let g:EasyMotion_do_mapping = 0
 Plug 'myusuf3/numbers.vim'                                           " Auto-toggle relative/absolute numbering
 Plug 'mbbill/undotree', {'on': 'UndotreeToggle'}                     " Graphical undo tree (pure Vimscript)
 Plug 'vim-scripts/auto-pairs-gentle'                                 " Auto insert matching brackets
@@ -285,18 +290,30 @@ nnoremap <silent> <S-Tab> :bprevious<CR>
 nmap <leader>c <Plug>NERDCommenterInvert
 xmap <leader>c <Plug>NERDCommenterInvert
 
-" EasyMotion. Bound through <Plug> for the same reason, and because the old
-" `nmap ,, <leader><leader>s` becomes infinitely recursive once <leader> is ','.
+" EasyMotion: jump to any 2-character sequence on screen.
+" Bound through <Plug> so a missing plugin is a silent no-op. The old
+" `nmap ,, <leader><leader>s` becomes infinitely recursive once <leader> is ','
+" — it would expand to ,,s, whose ,, prefix re-triggers the same mapping.
+" g:EasyMotion_do_mapping is set to 0 in section 2; without that, EasyMotion's
+" own default would clobber this line at plugin-load time.
 nmap <leader><leader> <Plug>(easymotion-s)
 
+" NOTE: no trailing comments on :map lines below. A mapping's RHS runs to the
+" end of the line, so a `"` starts a register argument, not a comment — the
+" comment text becomes part of the mapping and it silently misbehaves.
 nnoremap <F2> :NERDTreeToggle<CR>
 inoremap <F2> <Esc>:NERDTreeToggle<CR>a
 nnoremap <F3> :NERDTreeFocus<CR>
-nnoremap <F4> :set wrap!<CR>                                         " Toggle wrapping
-nnoremap <F5> :buffers<CR>:buffer<Space>                             " List buffers and switch
-nnoremap <F8> :UndotreeToggle<CR>                                    " Undo tree
-nnoremap <F9> :set cul!<CR>                                          " Toggle cursor-line highlight
-nnoremap <F10> mmgg=G`m                                              " Reindent the whole file
+" toggle line wrapping
+nnoremap <F4> :set wrap!<CR>
+" list buffers, then wait for one to be picked
+nnoremap <F5> :buffers<CR>:buffer<Space>
+" toggle the undo tree
+nnoremap <F8> :UndotreeToggle<CR>
+" toggle cursor-line highlight
+nnoremap <F9> :set cul!<CR>
+" reindent the whole file, returning to where you were
+nnoremap <F10> mmgg=G`m
 inoremap <F10> <Esc>mmgg=G`ma
 
 " Replace the current line with the output of running it through the shell

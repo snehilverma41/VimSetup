@@ -26,6 +26,24 @@ To back out:
 ./uninstall.sh --purge      # also delete plugins and undo/swap history
 ```
 
+## Verifying it works
+
+```sh
+./test.sh                   # test the repo's .vimrc
+./test.sh --installed       # test whatever is currently at ~/.vimrc
+```
+
+77 checks, run against a throwaway `$HOME`, so it's safe before installing.
+It checks that the vimrc loads clean, that every mapping resolves to what it
+should, and — the part that matters — that the mappings actually *behave*
+correctly when the keys are pressed.
+
+That last part is the reason the file exists. Several mappings here used to look
+right and do the wrong thing at runtime: a visual-mode `"+yy` that swallowed the
+next keypress, a `<C-M>` that was secretly the same key as `<CR>`, a stray `"`
+that left Vim waiting for a register name. A mapping table can't catch those —
+you have to press the keys and count the lines.
+
 ### What install.sh does
 
 - Symlinks `.vimrc` → `~/.vimrc`, and each entry in `.vim/` → `~/.vim/`.
