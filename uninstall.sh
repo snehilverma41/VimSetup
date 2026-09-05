@@ -30,31 +30,38 @@ step() { printf '\n==> %s\n' "$*"; }
 run()  { if (( DRY_RUN )); then say "would: $*"; else "$@"; fi; }
 
 # --- remove a symlink if (and only if) it points into this repo ---------------
+# Every `return` here is explicit. A bare `return` yields the status of the
+# previous command, so `[[ -e ... ]] && say ...` on a nonexistent path would
+# return 1 — and under `set -e` that silently aborts the whole script at the
+# first path that happens not to exist.
 unlink_if_ours() {
   local dest="$1"
 
   if [[ ! -L "$dest" ]]; then
-    [[ -e "$dest" ]] && say "keep $dest (a real file, not our symlink)"
-    return
+    if [[ -e "$dest" ]]; then
+      say "keep $dest (a real file, not our symlink)"
+    fi
+    return 0
   fi
 
   local target
   target="$(readlink "$dest")"
   if [[ "$target" != "$REPO"/* ]]; then
     say "keep $dest (points outside the repo: $target)"
-    return
+    return 0
   fi
 
   say "rm   $dest"
   run rm -- "$dest"
 
   # Restore the newest backup we left at this path, if any.
-  local newest
-  newest="$(find "$(dirname -- "$dest")" -maxdepth 1 -name "$(basename -- "$dest").backup.*" 2>/dev/null | sort | tail -1)"
+  local newest=''
+  newest="$(find "$(dirname -- "$dest")" -maxdepth 1 -name "$(basename -- "$dest").backup.*" 2>/dev/null | sort | tail -1 || true)"
   if [[ -n "$newest" ]]; then
     say "restore $newest -> $dest"
     run mv -- "$newest" "$dest"
   fi
+  return 0
 }
 
 step "Uninstalling links into $REPO"

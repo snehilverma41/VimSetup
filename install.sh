@@ -26,18 +26,20 @@ step() { printf '\n==> %s\n' "$*"; }
 run()  { if (( DRY_RUN )); then say "would: $*"; else "$@"; fi; }
 
 # --- link SRC -> DEST, backing up whatever is in the way ----------------------
+# Returns are explicit: a bare `return` yields the previous command's status,
+# which under `set -e` can abort the script from inside a helper.
 link() {
   local src="$1" dest="$2"
 
   if [[ ! -e "$src" ]]; then
     say "skip $dest (missing in repo: $src)"
-    return
+    return 0
   fi
 
   # Already pointing where we want? Nothing to do.
   if [[ -L "$dest" && "$(readlink "$dest")" == "$src" ]]; then
     say "ok   $dest -> $src"
-    return
+    return 0
   fi
 
   # A real file/dir, or a symlink somewhere else: move it aside.
@@ -48,6 +50,7 @@ link() {
 
   say "link $dest -> $src"
   run ln -sfn -- "$src" "$dest"
+  return 0
 }
 
 step "Installing from $REPO"
