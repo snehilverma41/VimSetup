@@ -59,60 +59,40 @@ endif
 " =============================================================================
 "  2. PLUGINS
 " =============================================================================
-" Plugins that need an external program or a Vim feature are declared
-" conditionally, so this file stays valid on a machine that lacks them.
+" Every plugin here does something on every machine. Anything that only worked
+" given a tool or Vim feature that isn't always present has been removed rather
+" than left declared-but-inert.
 if filereadable(s:plugfile)
 call plug#begin(s:plugdir)
 
 " --- appearance ---
-Plug 'vim-airline/vim-airline'                                       " Status/tabline
-Plug 'vim-airline/vim-airline-themes'                                " Themes for the above
-Plug 'flazz/vim-colorschemes'                                        " Colorscheme grab-bag (provides 256-jungle)
-Plug 'altercation/vim-colors-solarized'                              " Solarized
-Plug 'lanox/lanox-vim-theme'                                         " Lanox
+Plug 'vim-airline/vim-airline'                                        " Status/tabline
+Plug 'vim-airline/vim-airline-themes'                                 " Themes for the above
+Plug 'flazz/vim-colorschemes'                                         " Colorscheme grab-bag (provides 256-jungle, solarized, ...)
 
 " --- editing ---
-Plug 'preservim/nerdcommenter'                                       " Comment fast and professionally
+Plug 'preservim/nerdcommenter'                                        " Comment fast and professionally
 Plug 'preservim/nerdtree', {'on': ['NERDTreeToggle', 'NERDTreeFocus']}
-                                                                     " ^ both commands must be listed or <F3> is undefined
-Plug 'tpope/vim-surround'                                            " Quick surround with tags or brackets
-Plug 'easymotion/vim-easymotion'                                     " Quick jumping between lines
+                                                                      " ^ both commands must be listed or <F3> is undefined
+Plug 'tpope/vim-surround'                                             " Quick surround with tags or brackets
+Plug 'easymotion/vim-easymotion'                                      " Quick jumping between lines
 " EasyMotion claims <Leader><Leader> for its own prefix menu. Vim sources a
 " plugin's plugin/*.vim AFTER the vimrc, so that default would overwrite the
 " mapping in section 5 rather than the other way round. Opt out of its default
 " mappings here and bind explicitly below.
 let g:EasyMotion_do_mapping = 0
-Plug 'myusuf3/numbers.vim'                                           " Auto-toggle relative/absolute numbering
-Plug 'mbbill/undotree', {'on': 'UndotreeToggle'}                     " Graphical undo tree (pure Vimscript)
-Plug 'vim-scripts/auto-pairs-gentle'                                 " Auto insert matching brackets
-Plug 'gioele/vim-autoswap'                                           " Handle swap-file prompts intelligently
-Plug 'godlygeek/tabular'                                             " Alignment (also a vim-markdown dependency)
-Plug 'mg979/vim-visual-multi', {'branch': 'master'}                  " Multiple cursors, Sublime style
-Plug 'ctrlpvim/ctrlp.vim'                                            " Fast fuzzy file searching
-Plug 'vim-scripts/cmdalias.vim'                                      " Aliases for accidental commands
-Plug 'tpope/vim-fugitive'                                            " Git wrapper
-
-" --- snippets (snipmate needs both of these) ---
-Plug 'marcweber/vim-addon-mw-utils'
-Plug 'tomtom/tlib_vim'
-Plug 'garbas/vim-snipmate'                                           " Snippets for reusable code
+Plug 'myusuf3/numbers.vim'                                            " Auto-toggle relative/absolute numbering
+Plug 'mbbill/undotree', {'on': 'UndotreeToggle'}                      " Graphical undo tree (pure Vimscript)
+Plug 'vim-scripts/auto-pairs-gentle'                                  " Auto insert matching brackets
+Plug 'gioele/vim-autoswap'                                            " Handle swap-file prompts intelligently (needs 'title', set below)
+Plug 'godlygeek/tabular'                                              " Alignment (also a vim-markdown dependency)
+Plug 'mg979/vim-visual-multi', {'branch': 'master'}                   " Multiple cursors, Sublime style
+Plug 'ctrlpvim/ctrlp.vim'                                             " Fast fuzzy file searching
+Plug 'tpope/vim-fugitive'                                             " Git wrapper
 
 " --- languages ---
-Plug 'octol/vim-cpp-enhanced-highlight', {'for': ['c', 'cpp']}       " Enhanced C++ highlighting
-Plug 'preservim/vim-markdown', {'for': 'markdown'}                   " Better Markdown (needs tabular)
-Plug 'rhysd/vim-llvm', {'for': ['llvm', 'tablegen', 'mlir', 'mir']}  " LLVM highlighting
-Plug 'kchmck/vim-coffee-script', {'for': 'coffee'}                   " CoffeeScript
-Plug 'KabbAmine/zeavim.vim', {'on': ['Zeavim', 'Docset']}            " Offline documentation lookup
-
-if executable('go')
-  Plug 'fatih/vim-go', {'for': 'go', 'do': ':GoUpdateBinaries'}      " Go tooling (installs gopls, goimports, ...)
-endif
-if executable('flake8')
-  Plug 'nvie/vim-flake8', {'for': 'python'}                          " PEP8 checking
-endif
-if has('python3')
-  Plug 'jceb/vim-orgmode', {'for': 'org'}                            " OrgMode (hard-requires +python3)
-endif
+Plug 'preservim/vim-markdown', {'for': 'markdown'}                    " Better Markdown (needs tabular)
+Plug 'rhysd/vim-llvm', {'for': ['llvm', 'tablegen', 'mlir', 'mir']}   " LLVM highlighting
 
 call plug#end()
 endif
@@ -230,8 +210,11 @@ if has('gui_running')
 endif
 
 let g:NERDTreeIgnore = ['\.pyc$', '__pycache__', '\.o$']
-let g:go_fmt_command = 'goimports'                                   " Fix imports on save
-let g:go_version_warning = 0
+
+" vim-autoswap needs 'title' on and 'titlestring' at its default to identify
+" which window already holds the file — without these it silently does nothing.
+set title
+set titlestring=
 
 " =============================================================================
 "  5. MAPPINGS

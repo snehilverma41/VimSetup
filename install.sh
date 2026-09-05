@@ -154,8 +154,6 @@ if ! have_patched_font; then
 fi
 command -v cscope   >/dev/null 2>&1 || say "cscope: not installed (the cscope mappings stay disabled)"
 command -v ctags    >/dev/null 2>&1 || say "ctags:  not installed (tag jumping will not work)"
-command -v go       >/dev/null 2>&1 || say "go:     not installed (vim-go stays disabled)"
-command -v flake8   >/dev/null 2>&1 || say "flake8: not installed (vim-flake8 stays disabled)"
 
 # --- 5. Plugins --------------------------------------------------------------
 step "Plugins"

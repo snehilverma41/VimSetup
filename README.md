@@ -171,25 +171,59 @@ Managed by [vim-plug](https://github.com/junegunn/vim-plug), installed into
 `~/.vim/plugged` (`~/.config/nvim/plugged` under Neovim). Neither directory is
 tracked by git — vim-plug fetches them.
 
-Plugins with an external dependency are declared conditionally, so this config
-loads cleanly on a machine that lacks them: **vim-go** needs `go`,
-**vim-flake8** needs `flake8`, and **vim-orgmode** needs Vim built with
-`+python3`. Check with `vim --version | grep python3`.
+Seventeen plugins, and every one of them does something on every machine. That's
+deliberate: anything that only worked given a tool or a Vim feature that isn't
+always present has been removed rather than left declared-but-inert.
 
 <details>
 <summary>Full list</summary>
 
-**Appearance** — vim-airline, vim-airline-themes, vim-colorschemes,
-vim-colors-solarized, lanox-vim-theme
+**Appearance** — vim-airline, vim-airline-themes, vim-colorschemes
+(973 schemes, including `256-jungle` and `solarized`)
 
 **Editing** — nerdcommenter, nerdtree, vim-surround, vim-easymotion,
 numbers.vim, undotree, auto-pairs-gentle, vim-autoswap, tabular,
-vim-visual-multi, ctrlp.vim, cmdalias.vim, vim-fugitive
+vim-visual-multi, ctrlp.vim, vim-fugitive
 
-**Snippets** — vim-snipmate, with vim-addon-mw-utils and tlib_vim
+**Languages** — vim-markdown, vim-llvm
 
-**Languages** — vim-cpp-enhanced-highlight, vim-markdown, vim-llvm,
-vim-coffee-script, zeavim.vim, and conditionally vim-go, vim-flake8, vim-orgmode
+</details>
+
+<details>
+<summary>What was removed, and why</summary>
+
+Non-functional — these never worked, or actively broke things:
+
+| Plugin | Why |
+| --- | --- |
+| `kiteco/plugins` | Kite is defunct; the repo contains no plugin code at all |
+| `powerline/powerline` | A Python package, not a Vim plugin — its root has no `plugin/` or `autoload/`, so adding it to runtimepath did nothing |
+| `Python-Syntax-Folding` | Replaced Vim 9.1's bundled Python syntax with a 2006 copy |
+| `vim-bracketed-paste` | Native since Vim 8.0.210, and the plugin fights the native handling |
+| `rust.vim` | Vim 9.1 bundles newer copies of the same files, and the plugin shadowed them |
+| `~/new_proj/vim/autorun` | A local path that exists on no machine |
+
+Replaced — same capability, maintained upstream:
+
+| Was | Now | Why |
+| --- | --- | --- |
+| `sjl/gundo.vim` | `mbbill/undotree` | gundo requires `+python`, which stock macOS vim lacks; undotree is pure Vimscript |
+| `terryma/vim-multiple-cursors` | `mg979/vim-visual-multi` | deprecated by its author, by name |
+| `Superbil/llvm.vim` | `rhysd/vim-llvm` | the old one shipped LLVM's *example vimrc* as a `plugin/` file, clobbering global options |
+
+Retargeted to canonical owners (the old paths only worked via GitHub rename
+redirects, which break if anyone recreates the old name): nerdtree,
+nerdcommenter and vim-markdown → `preservim`; vim-easymotion → `easymotion`;
+vim-airline → `vim-airline`; ctrlp.vim → `ctrlpvim`; autoswap.vim →
+`gioele/vim-autoswap`.
+
+Dropped as unused: `vim-orgmode` (needs `+python3`, unmaintained since 2019),
+`vim-coffee-script`, `zeavim.vim` (Zeal is Linux-only), `cmdalias.vim` (declared
+but never called), `vim-snipmate` + `vim-addon-mw-utils` + `tlib_vim` (three
+plugins, zero snippets defined), `vim-cpp-enhanced-highlight` (archived; Vim
+9.1's bundled C++ syntax is newer), `vim-flake8` (superseded by ruff),
+`vim-go` (no Go on any current machine), and `vim-colors-solarized` +
+`lanox-vim-theme` (both already in vim-colorschemes).
 
 </details>
 
