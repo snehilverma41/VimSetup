@@ -128,7 +128,7 @@ set wildmenu                                                         " Tab-compl
 set splitbelow splitright                                            " Open splits where the eye expects them
 set backspace=indent,eol,start                                       " Make backspace work everywhere
 set hidden                                                           " Allow abandoning modified buffers
-set mouse=nv                                                         " Mouse in normal and visual modes
+set mouse=nvi                                                        " Mouse in normal, visual and insert modes
 set updatetime=300                                                   " Faster swap write / CursorHold
 
 " 'timeoutlen' governs mapping sequences; 'ttimeoutlen' governs terminal key
