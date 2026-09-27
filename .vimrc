@@ -84,6 +84,10 @@ let g:EasyMotion_do_mapping = 0
 Plug 'myusuf3/numbers.vim'                                            " Auto-toggle relative/absolute numbering
 Plug 'mbbill/undotree', {'on': 'UndotreeToggle'}                      " Graphical undo tree (pure Vimscript)
 Plug 'vim-scripts/auto-pairs-gentle'                                  " Auto insert matching brackets
+" auto-pairs binds insert-mode <M-b> buffer-locally, which outranks the global
+" Option+Left mapping in section 5. Its "back insert" only matters in Fly Mode,
+" which is off, so give the key up.
+let g:AutoPairsShortcutBackInsert = ''
 Plug 'gioele/vim-autoswap'                                            " Handle swap-file prompts intelligently (needs 'title', set below)
 Plug 'godlygeek/tabular'                                              " Alignment (also a vim-markdown dependency)
 Plug 'mg979/vim-visual-multi', {'branch': 'master'}                   " Multiple cursors, Sublime style
@@ -276,6 +280,21 @@ nnoremap <leader>U mzviwU`z
 " already restores the target buffer's own last cursor position.
 nnoremap <silent> <Tab>   :bnext<CR>
 nnoremap <silent> <S-Tab> :bprevious<CR>
+
+" Option+Left/Right move by word, in every mode.
+" iTerm2's "Natural Text Editing" preset sends ESC b / ESC f, which terminal
+" Vim would otherwise read as <Esc> then b/f — dropping out of insert mode, or
+" leaving a pending f-find in normal mode. Declaring them as <M-b>/<M-f> makes
+" Vim treat each as one key when it arrives within 'ttimeoutlen' (section 3).
+" Neovim and the GUI already decode these as Meta keys, so skip them there.
+if !has('nvim') && !has('gui_running')
+  execute "set <M-b>=\eb"
+  execute "set <M-f>=\ef"
+endif
+noremap  <M-b> b
+noremap  <M-f> w
+noremap! <M-b> <S-Left>
+noremap! <M-f> <S-Right>
 
 " Comment / uncomment. Bound to the plugin's <Plug> target rather than to
 " <leader>ci, so a missing plugin is a silent no-op instead of a beep followed

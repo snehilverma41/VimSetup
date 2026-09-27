@@ -114,6 +114,7 @@ and re-run `install.sh` to pick up the change.
 | `;` | `:` — start a command |
 | `,;` / `,.` | repeat last `f`/`t` search forward / backward |
 | `<Tab>` / `<S-Tab>` | next / previous buffer |
+| `⌥←` / `⌥→` | back / forward one word, in every mode (expects iTerm2's "Natural Text Editing" preset: `Esc b` / `Esc f`) |
 | `,,` | EasyMotion jump to any character |
 | `<F5>` | list buffers, then pick one |
 | `<F2>` | toggle NERDTree |
@@ -121,6 +122,9 @@ and re-run `install.sh` to pick up the change.
 
 `<Tab>` for buffer switching costs you `<C-I>` (jump forward through the
 jumplist) — in a terminal they are the same keystroke. `<C-O>` still works.
+
+`⌥←` arrives as `<M-b>`, so auto-pairs' "back insert" shortcut (also `<M-b>`,
+and only useful in its Fly Mode, which is off) is disabled to make room.
 
 ### Editing
 
