@@ -253,9 +253,35 @@ plugins, zero snippets defined), `vim-cpp-enhanced-highlight` (archived; Vim
 
 </details>
 
+## Shell setup (zsh, macOS)
+
+```sh
+~/.dotfiles/VimSetup/shell-setup.sh
+```
+
+Separate from `install.sh` — this one sets up zsh, not Vim, and needs Homebrew.
+It:
+
+- Installs [oh-my-zsh](https://ohmyz.sh) and the
+  [powerlevel10k](https://github.com/romkatv/powerlevel10k) prompt theme.
+- Downloads the MesloLGS NF fonts powerlevel10k expects into `~/Library/Fonts`.
+- Installs zsh-syntax-highlighting, zsh-autosuggestions, zsh-completions and fzf
+  with Homebrew, and appends a block to `~/.zshrc` that loads them — syntax
+  highlighting last, because it has to wrap every other widget.
+
+It is **safe to re-run**: oh-my-zsh, powerlevel10k and the fonts are skipped if
+already present, and the `~/.zshrc` block is fenced by marker comments so it is
+only added once. One caveat on a machine *without* oh-my-zsh: its installer
+moves any existing `~/.zshrc` to `~/.zshrc.pre-oh-my-zsh` and starts from its
+own template, so copy anything you need back over afterwards.
+
+Then set the terminal font to "MesloLGS NF" and open a new terminal. The
+powerlevel10k wizard starts on its own; `p10k configure` reruns it.
+
 ## Shell prompt
 
-Not installed by this repo — paste it in yourself. For **bash**, at the end of
+Not installed by this repo — paste it in yourself. (Under zsh, skip this if you
+ran `shell-setup.sh`; powerlevel10k draws the prompt.) For **bash**, at the end of
 `~/.bashrc`:
 
 ```bash
